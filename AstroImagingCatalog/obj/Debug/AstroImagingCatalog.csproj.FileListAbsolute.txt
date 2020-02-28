@@ -12,3 +12,6 @@ C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debu
 C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.csproj.GenerateResource.cache
 C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.exe
 C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.pdb
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\CSharpFITS_v1.1.dll
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.csproj.CopyComplete
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\Newtonsoft.Json.dll

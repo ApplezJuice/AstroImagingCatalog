@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj",
+        "projectName": "AstroImagingCatalog",
+        "projectPath": "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj",
+        "packagesPath": "C:\\Users\\mhayes\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\mhayes\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "dependencies": {
+            "CSharpFITS": {
+              "target": "Package",
+              "version": "[1.1.0, )"
+            },
+            "LiteDB": {
+              "target": "Package",
+              "version": "[5.0.3, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.3, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

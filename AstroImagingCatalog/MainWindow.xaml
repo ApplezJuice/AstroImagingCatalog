@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AstroImagingCatalog"
         mc:Ignorable="d"
-        Title="AstroImaging Catalog" Height="450" Width="714.688" Background="White">
+        Title="AstroImaging Catalog" Height="450" Width="714.688" Icon="Resources/Images/formicon.ico" Background="White">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Height="30">
             <StatusBarItem>
@@ -79,7 +79,8 @@
             </GroupBox>
 
             <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="5">
-                <Button x:Name="btn_deployadd" TabIndex="14" Content="Catalog Images" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,5,5" Padding="5,1" Click="btn_adddeploy_Click" />
+                <Button x:Name="btn_deployadd" TabIndex="14" Content="Sort Images" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,5,5" Padding="5,1" Click="btn_adddeploy_Click" />
+                <Button x:Name="btn_catalogImages" TabIndex="14" Content="Catalog Images" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,5,5" Padding="5,1" Click="btn_catalogImages_Click" />
             </StackPanel>
 
         </Grid>
