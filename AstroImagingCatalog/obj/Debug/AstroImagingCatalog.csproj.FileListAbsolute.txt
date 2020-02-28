@@ -1,0 +1,14 @@
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.csprojAssemblyReference.cache
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\MainWindow.g.cs
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\App.g.cs
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog_MarkupCompile.cache
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog_MarkupCompile.lref
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\AstroImagingCatalog.exe.config
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\AstroImagingCatalog.exe
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\AstroImagingCatalog.pdb
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\MainWindow.baml
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.g.resources
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.Properties.Resources.resources
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.csproj.GenerateResource.cache
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.exe
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.pdb
