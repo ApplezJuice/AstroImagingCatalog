@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AstroImagingCatalog"
         mc:Ignorable="d"
-        Title="AstroImaging Catalog" Height="450" Width="714.688" Icon="Resources/Images/formicon.ico" Background="White">
+        Title="AstroImaging Catalog" Height="463.125" Width="714.688" Icon="Resources/Images/formicon.ico" Background="White">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Height="30">
             <StatusBarItem>
@@ -38,50 +38,100 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <GroupBox x:Name="grpbx_selectFolders" Header="Select Image Folders" Width="auto" Height="auto" VerticalAlignment="Top" Grid.Row="0" Margin="5,0" Grid.ColumnSpan="2">
-                <StackPanel Orientation="Vertical">
-                    <WrapPanel>
-                        <Label x:Name="lbl_FileStructureSelect" Content="Select File Structure Type" Margin="3" VerticalAlignment="Center" Width="150"/>
-                        <ComboBox x:Name="application_DropDown" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" Width="200" SelectionChanged="ComboBox_SelectionChanged">
-                            <ComboBoxItem x:Name="combo_APT" Content="Astro Photography Tools" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        </ComboBox>
-                    </WrapPanel>
-                    <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" Width="auto" Margin="0,0,0,0">
-                        <Label x:Name="lbl_foldersource" Content="Source" Margin="3" VerticalAlignment="Center" Width="80"/>
-                        <TextBox x:Name="txtbx_srcfolder" TabIndex="1" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="494"/>
-                        <Button x:Name="btn_archive_browse" Content="Browse" Height="30" VerticalAlignment="Center" Width="76" Click="Button_BrowseArchiveClick"/>
-                    </WrapPanel>
-                    <WrapPanel>
-                        <Label x:Name="lbl_archive_dest" Content="Destination" Margin="3" VerticalAlignment="Center" Width="80"/>
-                        <TextBox x:Name="txtbx_dstfolder" TabIndex="2" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="494"/>
-                        <Button x:Name="btn_archive_dst" Content="Browse" Height="30" VerticalAlignment="Center" Width="76" Click="Button_DestArchiveClick"/>
-                    </WrapPanel>
-                </StackPanel>
-            </GroupBox>
+            <TabControl Height="auto" Width="auto">
+                <TabItem Header="Sort and Catalog">
+                    <StackPanel>
+                        <GroupBox x:Name="grpbx_selectFolders" Header="Select Image Folders" Width="auto" Height="auto" VerticalAlignment="Top" Grid.Row="0" Margin="5,0" Grid.ColumnSpan="2">
+                            <StackPanel Orientation="Vertical">
+                                <WrapPanel>
+                                    <Label x:Name="lbl_FileStructureSelect" Content="Select File Structure Type" Margin="3" VerticalAlignment="Center" Width="150"/>
+                                    <ComboBox x:Name="application_DropDown" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" Width="200" SelectionChanged="ComboBox_SelectionChanged">
+                                        <ComboBoxItem x:Name="combo_APT" Content="Astro Photography Tools" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    </ComboBox>
+                                </WrapPanel>
+                                <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" Width="auto" Margin="0,0,0,0">
+                                    <Label x:Name="lbl_foldersource" Content="Source" Margin="3" VerticalAlignment="Center" Width="80"/>
+                                    <TextBox x:Name="txtbx_srcfolder" TabIndex="1" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="494"/>
+                                    <Button x:Name="btn_archive_browse" Content="Select" Height="30" VerticalAlignment="Center" Width="76" Click="Button_BrowseArchiveClick"/>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <Label x:Name="lbl_archive_dest" Content="Destination" Margin="3" VerticalAlignment="Center" Width="80"/>
+                                    <TextBox x:Name="txtbx_dstfolder" TabIndex="2" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="494"/>
+                                    <Button x:Name="btn_archive_dst" Content="Select" Height="30" VerticalAlignment="Center" Width="76" Click="Button_DestArchiveClick"/>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <Label x:Name="lbl_DB_dest" Content="DB Location" Margin="3" VerticalAlignment="Center" Width="80"/>
+                                    <TextBox x:Name="txtbx_dbDstFolder" TabIndex="2" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="494"/>
+                                    <Button x:Name="btn_chooseDB_dst" Content="Select" Height="30" VerticalAlignment="Center" Width="76" Click="Button_DestDBClick"/>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <Label x:Name="lbl_DBNote" Content="Select the location of your DB or where you'd like to store your DB file" FontSize="10"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </GroupBox>
 
-            <GroupBox x:Name="grpbx_DefineDetails" Header="Provide Image Details" Width="auto" Height="auto" VerticalAlignment="Top" Grid.Row="1" Margin="5,0" Grid.ColumnSpan="2">
-                <StackPanel Orientation="Vertical">
-                    <WrapPanel>
-                        <Label x:Name="lbl_TargetName" Content="Object Name" Margin="3" VerticalAlignment="Center" Width="80"/>
-                        <TextBox x:Name="txtbx_targetName" TabIndex="2" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="574"/>
-                    </WrapPanel>
-                    <WrapPanel>
-                        <Label x:Name="lbl_DateTaken" Content="Date Taken" Margin="3" VerticalAlignment="Center" Width="80"/>
-                        <DatePicker x:Name="date_DateTaken" TabIndex="2" Height="30" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="574"/>
-                    </WrapPanel>
-                    <WrapPanel>
-                        <Label x:Name="lbl_DateNote" Content="If no date is provided, it will determine from the first image creation date" FontSize="10"/>
-                    </WrapPanel>
-                    <WrapPanel>
+                        <GroupBox x:Name="grpbx_DefineDetails" Header="Provide Image Details" Width="auto" Height="auto" VerticalAlignment="Top" Grid.Row="1" Margin="5,0" Grid.ColumnSpan="2">
+                            <StackPanel Orientation="Vertical">
+                                <WrapPanel>
+                                    <Label x:Name="lbl_TargetName" Content="Object Name" Margin="3" VerticalAlignment="Center" Width="80"/>
+                                    <TextBox x:Name="txtbx_targetName" TabIndex="2" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="574"/>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <Label x:Name="lbl_DateTaken" Content="Date Taken" Margin="3" VerticalAlignment="Center" Width="80"/>
+                                    <DatePicker x:Name="date_DateTaken" TabIndex="2" Height="30" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="574"/>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <Label x:Name="lbl_DateNote" Content="If no date is provided, it will determine from the first image creation date" FontSize="10"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </GroupBox>
+                        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="5">
+                            <Button x:Name="btn_deployadd" TabIndex="14" Content="Sort Images" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,5,5" Padding="5,1" Click="btn_adddeploy_Click" />
+                            <Button x:Name="btn_catalogImages" TabIndex="14" Content="Catalog Images" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,5,5" Padding="5,1" Click="btn_catalogImages_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </TabItem>
+
+                <TabItem Header="Search Database">
+                    <StackPanel>
+                        <GroupBox x:Name="grpbx_searchCriteria" Header="Search Parameters" Width="auto" Height="auto" VerticalAlignment="Top" Grid.Row="0" Margin="5,0" Grid.ColumnSpan="2">
+                            <StackPanel  Orientation="Vertical">
+                                <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" Width="auto" Margin="0,0,0,0">
+                                    <Label x:Name="lbl_objectName" Content="Object Name" Margin="3" VerticalAlignment="Center" Width="80"/>
+                                    <TextBox x:Name="txtbx_objectName" TabIndex="1" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="100"/>
+
+                                    <Label x:Name="lbl_Bin" Content="Bin (ex. 1x1)" Margin="3" VerticalAlignment="Center" Width="75"/>
+                                    <TextBox x:Name="txtbx_Bin" TabIndex="1" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="40"/>
+
+                                    <Label x:Name="lbl_Gain" Content="Gain" Margin="3" VerticalAlignment="Center" Width="35"/>
+                                    <TextBox x:Name="txtbx_Gain" TabIndex="1" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="50"/>
+                                    
+                                    <Label x:Name="lbl_Temp" Content="CCD Temp" Margin="3" VerticalAlignment="Center" Width="65"/>
+                                    <TextBox x:Name="txtbx_Temp" TabIndex="1" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="50"/>
+                                </WrapPanel>
+
+                                <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" Width="auto" Margin="0,0,0,0">
+                                    <Label x:Name="lbl_DateSearch" Content="Date Taken (yyyyMMdd)" Margin="3" VerticalAlignment="Center" Width="140"/>
+                                    <TextBox x:Name="txtbx_DateSearch" TabIndex="1" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="80"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox x:Name="grpbx_SearchResults" Header="Search Results" Width="auto" Height="auto" VerticalAlignment="Top" Grid.Row="1" Margin="5,0" Grid.ColumnSpan="2">
+                            <StackPanel Orientation="Vertical">
+                                <WrapPanel>
+                                    <RichTextBox x:Name="rtbx_searchResults" TabIndex="1" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" MinWidth="665" MinHeight="190"/>
+                                </WrapPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="5">
+                            <Button x:Name="btn_searchDB" TabIndex="14" Content="Search DB" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,5,5" Padding="5,1" Click="btn_searchDB_Click" />
+                        </StackPanel>
                         
-                    </WrapPanel>
-                </StackPanel>
-            </GroupBox>
-
-            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="5">
-                <Button x:Name="btn_deployadd" TabIndex="14" Content="Sort Images" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,5,5" Padding="5,1" Click="btn_adddeploy_Click" />
-                <Button x:Name="btn_catalogImages" TabIndex="14" Content="Catalog Images" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5,0,5,5" Padding="5,1" Click="btn_catalogImages_Click" />
-            </StackPanel>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
 
         </Grid>
     </DockPanel>

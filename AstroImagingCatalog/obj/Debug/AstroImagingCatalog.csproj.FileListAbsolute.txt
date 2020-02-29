@@ -15,3 +15,4 @@ C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debu
 C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\CSharpFITS_v1.1.dll
 C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.csproj.CopyComplete
 C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\Newtonsoft.Json.dll
+C:\Users\mhayes\Documents\Repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\LiteDB.dll

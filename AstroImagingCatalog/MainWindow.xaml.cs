@@ -17,6 +17,8 @@ using nom.tam.util;
 using nom.tam.fits;
 using nom.tam.image;
 using Newtonsoft.Json;
+using LiteDB;
+using System.Collections;
 
 namespace AstroImagingCatalog
 {
@@ -54,6 +56,16 @@ namespace AstroImagingCatalog
             if (!string.IsNullOrWhiteSpace(folderBrowser.SelectedPath))
             {
                 txtbx_dstfolder.Text = folderBrowser.SelectedPath;
+            }
+        }
+
+        private void Button_DestDBClick(object sender, RoutedEventArgs e)
+        {
+            var folderBrowser = new FolderBrowserDialog();
+            folderBrowser.ShowDialog();
+            if (!string.IsNullOrWhiteSpace(folderBrowser.SelectedPath))
+            {
+                txtbx_dbDstFolder.Text = folderBrowser.SelectedPath;
             }
         }
 
@@ -235,27 +247,142 @@ namespace AstroImagingCatalog
             long tempID = testDatabase.Count;
             Header hduHeader = hdu.Header;
 
-            testDatabase.Add(new FITInformation
+            if (!string.IsNullOrWhiteSpace(txtbx_dbDstFolder.Text))
             {
-                ID = tempID,
-                ObjectName = objectName,
-                DateTaken = date,
-                ImagingCamera = hdu.Instrument,
-                FilesDirectory = fileDirectory,
-                FocalLength = Convert.ToInt32(hduHeader.FindCard("FOCALLEN").Value),
-                CameraTemp = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value),
-                Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,
-                CameraGain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value),
-                SiteLat = hduHeader.FindCard("SITELAT").Value.ToString(),
-                SiteLong = hduHeader.FindCard("SITELONG").Value.ToString()
-            });
+                // Open a database or create one if none exists
+                using (var db = new LiteDatabase(txtbx_dbDstFolder.Text + "\\ImageCatalog.db"))
+                {
+                    // get a collection or create one if none exists
+                    var col = db.GetCollection<FITInformation>("Images");
+
+                    // create your new image entry
+                    var image = new FITInformation
+                    {
+                        ObjectName = objectName,
+                        DateTaken = date,
+                        ImagingCamera = hdu.Instrument,
+                        FilesDirectory = fileDirectory,
+                        FocalLength = Convert.ToInt32(hduHeader.FindCard("FOCALLEN").Value),
+                        CameraTemp = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value),
+                        Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,
+                        CameraGain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value),
+                        SiteLat = hduHeader.FindCard("SITELAT").Value.ToString(),
+                        SiteLong = hduHeader.FindCard("SITELONG").Value.ToString()
+                    };
+
+                    // insert new image (it will be auto-incremented)
+                    col.Insert(image);
+                }
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("No DB folder selected, please select the location for the DB.", "No DB Folder", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            //testDatabase.Add(new FITInformation
+            //{
+            //    ID = tempID,
+            //    ObjectName = objectName,
+            //    DateTaken = date,
+            //    ImagingCamera = hdu.Instrument,
+            //    FilesDirectory = fileDirectory,
+            //    FocalLength = Convert.ToInt32(hduHeader.FindCard("FOCALLEN").Value),
+            //    CameraTemp = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value),
+            //    Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,
+            //    CameraGain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value),
+            //    SiteLat = hduHeader.FindCard("SITELAT").Value.ToString(),
+            //    SiteLong = hduHeader.FindCard("SITELONG").Value.ToString()
+            //});
         }
 
         private void btn_catalogImages_Click(object sender, RoutedEventArgs e)
         {
             AddItemToDatabase(txtbx_targetName.Text, dateToStore, destToImages, hduToGetInfoFrom);
-            string output = JsonConvert.SerializeObject(testDatabase[0]);
-            System.IO.File.WriteAllText(destToImages + "\\content.txt", output);
+            //string output = JsonConvert.SerializeObject(testDatabase[0]);
+            //System.IO.File.WriteAllText(destToImages + "\\content.txt", output);
+        }
+
+        private void btn_searchDB_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtbx_dbDstFolder.Text))
+            {
+                rtbx_searchResults.Document.Blocks.Clear();
+
+                List<FITInformation> resultList = new List<FITInformation>();
+
+                using (var db = new LiteDatabase(txtbx_dbDstFolder.Text + "\\ImageCatalog.db"))
+                {
+                    var col = db.GetCollection<FITInformation>("Images");
+                    col.EnsureIndex(x => x.ObjectName);
+
+                    var whatToQuery = col.Query();
+
+                    if (!string.IsNullOrWhiteSpace(txtbx_objectName.Text))
+                    {
+                        whatToQuery.Where(x => x.ObjectName.ToUpper() == txtbx_objectName.Text);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(txtbx_DateSearch.Text))
+                    {
+                        whatToQuery.Where(x => x.DateTaken.ToUpper() == txtbx_DateSearch.Text);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(txtbx_Gain.Text))
+                    {
+                        whatToQuery.Where(x => x.CameraGain == Convert.ToInt32(txtbx_Gain.Text));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(txtbx_Temp.Text))
+                    {
+                        whatToQuery.Where(x => x.CameraTemp == Convert.ToDecimal(txtbx_Temp.Text));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(txtbx_Bin.Text))
+                    {
+                        whatToQuery.Where(x => x.Binning.ToUpper() == txtbx_Bin.Text);
+                    }
+
+                    var results = whatToQuery.ToList();
+
+                    //var results = col.Query()
+                    //    .Where(x => x.ObjectName.ToUpper() == txtbx_objectName.Text.ToUpper())
+                    //    .ToList();
+
+                    int i = 1;
+                    foreach (var item in results)
+                    {
+                        var p = new Paragraph();
+                        p.Inlines.Add("Result #" + i);
+                        p.Inlines.Add(new LineBreak());
+                        //rtbx_searchResults.Document.Blocks.Add(paragraph1);
+
+                        p.Inlines.Add("Object Name: " + item.ObjectName + " | ");
+                        p.Inlines.Add("Date Taken: " + item.DateTaken);
+                        p.Inlines.Add(new LineBreak());
+                        p.Inlines.Add("File Location: " + item.FilesDirectory);
+                        p.Inlines.Add(new LineBreak());
+
+                        p.Inlines.Add("Binning: " + item.Binning + " | ");
+                        p.Inlines.Add("CCD Temp: " + item.CameraTemp + " | ");
+                        p.Inlines.Add("Gain: " + item.CameraGain + " | ");
+                        p.Inlines.Add("Focal Length: " + item.FocalLength + " | ");
+                        p.Inlines.Add("Latitude: " + item.SiteLat + " | ");
+                        p.Inlines.Add("Longitude: " + item.SiteLong);
+
+                        rtbx_searchResults.Document.Blocks.Add(p);
+
+                        i++;
+                    }
+                    
+
+                }
+            }
+            else
+            {
+                // No DB directory selected
+                System.Windows.MessageBox.Show("No DB folder selected, please select the location for the DB.", "No DB Folder", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
         }
     }
 }
