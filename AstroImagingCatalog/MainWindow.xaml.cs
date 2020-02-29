@@ -90,25 +90,6 @@ namespace AstroImagingCatalog
                     string[] filesFullPath;
                     GenerateArrayOfFileNames(out dateTaken, out files, out filesFullPath);
 
-                    HashSet<string> fileTypesHashSet = new HashSet<string>();
-                    List<String> fileTypes = new List<string>();
-
-                    foreach (var fileName in files)
-                    {
-                        // loop through each of the file names
-                        if (application_DropDown.Text == "Astro Photography Tools")
-                        {
-                            string firstThreeLetters = fileName[0].ToString() + fileName[1].ToString() + fileName[2].ToString();
-                            if (!fileTypesHashSet.Contains(firstThreeLetters))
-                            {
-                                // Does not already have the first two letters in the hashset
-                                fileTypesHashSet.Add(firstThreeLetters);
-                                fileTypes.Add(firstThreeLetters);
-                                lblStatus.Text = firstThreeLetters;
-                            }
-                        }
-                    }
-
                     // Set date for object
                     if (date_DateTaken.SelectedDate.HasValue)
                     {
@@ -117,7 +98,7 @@ namespace AstroImagingCatalog
                     var dateFolder = dateTaken.ToString("yyyyMMdd");
                     dateToStore = dateFolder;
 
-                    CreateDirectoryAndSortImages(dstPath, targetName, files, filesFullPath, fileTypes, dateFolder);
+                    CreateDirectoryAndSortImages(dstPath, targetName, files, filesFullPath, dateFolder);
                 }
             }
             else
@@ -126,59 +107,57 @@ namespace AstroImagingCatalog
             }
         }
 
-        private void CreateDirectoryAndSortImages(string dstPath, string targetName, string[] files, string[] filesFullPath, List<string> fileTypes, string dateFolder)
+        private void CreateDirectoryAndSortImages(string dstPath, string targetName, string[] files, string[] filesFullPath, string dateFolder)
         {
+
+            HashSet<string> fileTypesHashSet = new HashSet<string>();
             destToImages = dstPath + "\\" + targetName + "\\" + dateFolder;
-            // Create LightFrames directories
+            // Create Light Frames directories
             if (application_DropDown.Text == "Astro Photography Tools")
             {
-                foreach (var fileType in fileTypes)
-                {
-                    switch (fileType[0])
-                    {
-                        case 'L':
-                            // Create Lightframe folder
-                            System.IO.Directory.CreateDirectory(dstPath + "\\" + targetName + "\\" + dateFolder + "\\" + @"\LightFrames\" + fileType[2].ToString());
-                            break;
-                        case 'F':
-                            // Create Flats folder
-                            System.IO.Directory.CreateDirectory(dstPath + "\\" + targetName + "\\" + dateFolder + "\\" + @"\Flats\" + fileType[2].ToString());
-                            break;
-                        case 'D':
-                            // Create Darks folder
-                            System.IO.Directory.CreateDirectory(dstPath + "\\" + targetName + "\\" + dateFolder + "\\" + @"\Darks\" + fileType[2].ToString());
-                            break;
-                        default:
-                            // Create UNKNOWN folder
-                            System.IO.Directory.CreateDirectory(dstPath + "\\" + targetName + "\\" + dateFolder + "\\" + @"\UNKNOWN\" + fileType[2].ToString());
-                            break;
-                    }
-                }
 
                 HashSet<string> firstFileToHold = new HashSet<string>();
 
-                // Read each full file path
                 for (int i = 0; i < filesFullPath.Length; i++)
                 {
                     string fileTypeTemp;
 
-
-                    switch (files[i][0])
+                    // Get the header of each file
+                    var headerInfo = ReadFIT(filesFullPath[i]).Header;
+                    var imageType = headerInfo.FindCard("IMAGETYP").Value;
+                    string filterType = "";
+                    if (imageType == "Light Frame" || imageType == "Flat Frame")
                     {
-                        case 'L':
-                            // Current image is a light frame
-                            fileTypeTemp = "\\LightFrames" + "\\" + files[i][2].ToString() + "\\";
+                        filterType = headerInfo.FindCard("FILTER").Value;
+                    }
+
+                    if (!fileTypesHashSet.Contains(imageType + "/" + filterType))
+                    {
+                        // If the file type is not already in the hash set then add it
+                        fileTypesHashSet.Add(imageType + "/" + filterType);
+                        if (filterType == "")
+                        {
+                            System.IO.Directory.CreateDirectory(dstPath + "\\" + targetName + "\\" + dateFolder + "\\" + imageType + "s");
+                        }
+                        else
+                        {
+                            System.IO.Directory.CreateDirectory(dstPath + "\\" + targetName + "\\" + dateFolder + "\\" + imageType + "s\\" + filterType);
+                        }
+                    }
+
+                    switch (imageType)
+                    {
+                        case "Light Frame":
+                            fileTypeTemp = "\\Light Frames\\" + headerInfo.FindCard("FILTER").Value + "\\";
                             break;
-                        case 'F':
-                            // Current image is a flat frame
-                            fileTypeTemp = "\\Flats" + "\\" + files[i][2].ToString() + "\\";
+                        case "Dark Frame":
+                            fileTypeTemp = "\\Dark Frames\\";
                             break;
-                        case 'D':
-                            // Current image is a dark frame
-                            fileTypeTemp = "\\Darks" + "\\" + files[i][2].ToString() + "\\";
+                        case "Flat Frame":
+                            fileTypeTemp = "\\Flat Frames\\" + filterType + "\\";
                             break;
                         default:
-                            fileTypeTemp = "\\UNKNOWN" + "\\" + files[i][2].ToString() + "\\";
+                            fileTypeTemp = "\\UNKNOWN\\";
                             break;
                     }
 
@@ -186,7 +165,7 @@ namespace AstroImagingCatalog
                     // Get the FITS image data information
                     BasicHDU hdu = ReadFIT(filesFullPath[i]);
 
-                    if (files[i][0] == 'L' && !firstFileToHold.Contains(files[i]))
+                    if (imageType == "Light Frame" && !firstFileToHold.Contains(files[i]))
                     {
                         hduToGetInfoFrom = hdu;
                         firstFileToHold.Add(files[i]);
@@ -205,8 +184,6 @@ namespace AstroImagingCatalog
                 if (hdus != null)
                 {
                     hdus.Info();
-                    Header hduHeader = hdus.Header;
-                    var testHeader = hduHeader.FindCard("CCD-TEMP").Value;
                 }
                 return hdus;
             }
