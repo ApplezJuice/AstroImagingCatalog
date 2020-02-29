@@ -1,24 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using nom.tam.util;
 using nom.tam.fits;
-using nom.tam.image;
-using Newtonsoft.Json;
 using LiteDB;
-using System.Collections;
 
 namespace AstroImagingCatalog
 {
@@ -278,28 +265,11 @@ namespace AstroImagingCatalog
             {
                 System.Windows.MessageBox.Show("No DB folder selected, please select the location for the DB.", "No DB Folder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            //testDatabase.Add(new FITInformation
-            //{
-            //    ID = tempID,
-            //    ObjectName = objectName,
-            //    DateTaken = date,
-            //    ImagingCamera = hdu.Instrument,
-            //    FilesDirectory = fileDirectory,
-            //    FocalLength = Convert.ToInt32(hduHeader.FindCard("FOCALLEN").Value),
-            //    CameraTemp = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value),
-            //    Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,
-            //    CameraGain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value),
-            //    SiteLat = hduHeader.FindCard("SITELAT").Value.ToString(),
-            //    SiteLong = hduHeader.FindCard("SITELONG").Value.ToString()
-            //});
         }
 
         private void btn_catalogImages_Click(object sender, RoutedEventArgs e)
         {
             AddItemToDatabase(txtbx_targetName.Text, dateToStore, destToImages, hduToGetInfoFrom);
-            //string output = JsonConvert.SerializeObject(testDatabase[0]);
-            //System.IO.File.WriteAllText(destToImages + "\\content.txt", output);
         }
 
         private void btn_searchDB_Click(object sender, RoutedEventArgs e)
@@ -308,73 +278,32 @@ namespace AstroImagingCatalog
             {
                 rtbx_searchResults.Document.Blocks.Clear();
 
-                List<FITInformation> resultList = new List<FITInformation>();
+                List<FITInformation> results = GenerateSearchQuery();
 
-                using (var db = new LiteDatabase(txtbx_dbDstFolder.Text + "\\ImageCatalog.db"))
+                int i = 1;
+                foreach (var item in results)
                 {
-                    var col = db.GetCollection<FITInformation>("Images");
-                    col.EnsureIndex(x => x.ObjectName);
+                    var p = new Paragraph();
+                    p.Inlines.Add("Result #" + i);
+                    p.Inlines.Add(new LineBreak());
+                    //rtbx_searchResults.Document.Blocks.Add(paragraph1);
 
-                    var whatToQuery = col.Query();
+                    p.Inlines.Add("Object Name: " + item.ObjectName + " | ");
+                    p.Inlines.Add("Date Taken: " + item.DateTaken);
+                    p.Inlines.Add(new LineBreak());
+                    p.Inlines.Add("File Location: " + item.FilesDirectory);
+                    p.Inlines.Add(new LineBreak());
 
-                    if (!string.IsNullOrWhiteSpace(txtbx_objectName.Text))
-                    {
-                        whatToQuery.Where(x => x.ObjectName.ToUpper() == txtbx_objectName.Text);
-                    }
+                    p.Inlines.Add("Binning: " + item.Binning + " | ");
+                    p.Inlines.Add("CCD Temp: " + item.CameraTemp + " | ");
+                    p.Inlines.Add("Gain: " + item.CameraGain + " | ");
+                    p.Inlines.Add("Focal Length: " + item.FocalLength + " | ");
+                    p.Inlines.Add("Latitude: " + item.SiteLat + " | ");
+                    p.Inlines.Add("Longitude: " + item.SiteLong);
 
-                    if (!string.IsNullOrWhiteSpace(txtbx_DateSearch.Text))
-                    {
-                        whatToQuery.Where(x => x.DateTaken.ToUpper() == txtbx_DateSearch.Text);
-                    }
+                    rtbx_searchResults.Document.Blocks.Add(p);
 
-                    if (!string.IsNullOrWhiteSpace(txtbx_Gain.Text))
-                    {
-                        whatToQuery.Where(x => x.CameraGain == Convert.ToInt32(txtbx_Gain.Text));
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(txtbx_Temp.Text))
-                    {
-                        whatToQuery.Where(x => x.CameraTemp == Convert.ToDecimal(txtbx_Temp.Text));
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(txtbx_Bin.Text))
-                    {
-                        whatToQuery.Where(x => x.Binning.ToUpper() == txtbx_Bin.Text);
-                    }
-
-                    var results = whatToQuery.ToList();
-
-                    //var results = col.Query()
-                    //    .Where(x => x.ObjectName.ToUpper() == txtbx_objectName.Text.ToUpper())
-                    //    .ToList();
-
-                    int i = 1;
-                    foreach (var item in results)
-                    {
-                        var p = new Paragraph();
-                        p.Inlines.Add("Result #" + i);
-                        p.Inlines.Add(new LineBreak());
-                        //rtbx_searchResults.Document.Blocks.Add(paragraph1);
-
-                        p.Inlines.Add("Object Name: " + item.ObjectName + " | ");
-                        p.Inlines.Add("Date Taken: " + item.DateTaken);
-                        p.Inlines.Add(new LineBreak());
-                        p.Inlines.Add("File Location: " + item.FilesDirectory);
-                        p.Inlines.Add(new LineBreak());
-
-                        p.Inlines.Add("Binning: " + item.Binning + " | ");
-                        p.Inlines.Add("CCD Temp: " + item.CameraTemp + " | ");
-                        p.Inlines.Add("Gain: " + item.CameraGain + " | ");
-                        p.Inlines.Add("Focal Length: " + item.FocalLength + " | ");
-                        p.Inlines.Add("Latitude: " + item.SiteLat + " | ");
-                        p.Inlines.Add("Longitude: " + item.SiteLong);
-
-                        rtbx_searchResults.Document.Blocks.Add(p);
-
-                        i++;
-                    }
-                    
-
+                    i++;
                 }
             }
             else
@@ -384,5 +313,47 @@ namespace AstroImagingCatalog
             }
             
         }
+
+        private List<FITInformation> GenerateSearchQuery()
+        {
+            using (var db = new LiteDatabase(txtbx_dbDstFolder.Text + "\\ImageCatalog.db"))
+            {
+                var col = db.GetCollection<FITInformation>("Images");
+                col.EnsureIndex(x => x.ObjectName);
+
+                var whatToQuery = col.Query();
+
+                if (!string.IsNullOrWhiteSpace(txtbx_objectName.Text))
+                {
+                    whatToQuery.Where(x => x.ObjectName.ToUpper() == txtbx_objectName.Text);
+                }
+
+                if (!string.IsNullOrWhiteSpace(txtbx_DateSearch.Text))
+                {
+                    whatToQuery.Where(x => x.DateTaken.ToUpper() == txtbx_DateSearch.Text);
+                }
+
+                if (!string.IsNullOrWhiteSpace(txtbx_Gain.Text))
+                {
+                    whatToQuery.Where(x => x.CameraGain == Convert.ToInt32(txtbx_Gain.Text));
+                }
+
+                if (!string.IsNullOrWhiteSpace(txtbx_Temp.Text))
+                {
+                    whatToQuery.Where(x => x.CameraTemp == Convert.ToDecimal(txtbx_Temp.Text));
+                }
+
+                if (!string.IsNullOrWhiteSpace(txtbx_Bin.Text))
+                {
+                    whatToQuery.Where(x => x.Binning.ToUpper() == txtbx_Bin.Text);
+                }
+
+                var results = whatToQuery.ToList();
+
+                return results;
+            }
+
+            throw new Exception("DB could not query");
+         }
     }
 }
