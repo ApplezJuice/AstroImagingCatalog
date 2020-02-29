@@ -68,38 +68,37 @@ namespace AstroImagingCatalog
 
         private void btn_adddeploy_Click(object sender, RoutedEventArgs e)
         {
-            if(!string.IsNullOrWhiteSpace(txtbx_srcfolder.Text) && !string.IsNullOrWhiteSpace(txtbx_dstfolder.Text) && !string.IsNullOrWhiteSpace(application_DropDown.Text))
+            if(!string.IsNullOrWhiteSpace(txtbx_srcfolder.Text) && !string.IsNullOrWhiteSpace(txtbx_dstfolder.Text)) // && !string.IsNullOrWhiteSpace(application_DropDown.Text)
             {
-                if (string.IsNullOrWhiteSpace(txtbx_targetName.Text))
+                // Both source folder and dest folder selected
+                lblStatus.Text = "Creating image catalog from " + txtbx_srcfolder.Text + " to " + txtbx_dstfolder.Text + ". Please wait...";
+
+                string dstPath = txtbx_dstfolder.Text;
+                string targetName = "NOTARGET";
+
+                if (!string.IsNullOrWhiteSpace(txtbx_targetName.Text))
                 {
-                    System.Windows.MessageBox.Show("Unable to catalog images. The target name was left empty.", "Unable to Catalog Images", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    targetName = txtbx_targetName.Text;
                 }
-                else
+
+                DateTime dateTaken = new DateTime();
+
+                System.IO.Directory.CreateDirectory(dstPath + @"\" + targetName);
+
+                // Create array of all file names in the image folder
+                string[] files;
+                string[] filesFullPath;
+                GenerateArrayOfFileNames(out dateTaken, out files, out filesFullPath);
+
+                // Set date for object
+                if (date_DateTaken.SelectedDate.HasValue)
                 {
-                    // Both source folder and dest folder selected
-                    lblStatus.Text = "Creating image catalog from " + txtbx_srcfolder.Text + " to " + txtbx_dstfolder.Text + ". Please wait...";
-
-                    string dstPath = txtbx_dstfolder.Text;
-                    string targetName = txtbx_targetName.Text;
-                    DateTime dateTaken = new DateTime();
-
-                    System.IO.Directory.CreateDirectory(dstPath + @"\" + targetName);
-
-                    // Create array of all file names in the image folder
-                    string[] files;
-                    string[] filesFullPath;
-                    GenerateArrayOfFileNames(out dateTaken, out files, out filesFullPath);
-
-                    // Set date for object
-                    if (date_DateTaken.SelectedDate.HasValue)
-                    {
-                        dateTaken = (DateTime)date_DateTaken.SelectedDate;
-                    }
-                    var dateFolder = dateTaken.ToString("yyyyMMdd");
-                    dateToStore = dateFolder;
-
-                    CreateDirectoryAndSortImages(dstPath, targetName, files, filesFullPath, dateFolder);
+                    dateTaken = (DateTime)date_DateTaken.SelectedDate;
                 }
+                var dateFolder = dateTaken.ToString("yyyyMMdd");
+                dateToStore = dateFolder;
+
+                CreateDirectoryAndSortImages(dstPath, targetName, files, filesFullPath, dateFolder);
             }
             else
             {
@@ -111,68 +110,85 @@ namespace AstroImagingCatalog
         {
 
             HashSet<string> fileTypesHashSet = new HashSet<string>();
-            destToImages = dstPath + "\\" + targetName + "\\" + dateFolder;
+            destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
+
             // Create Light Frames directories
-            if (application_DropDown.Text == "Astro Photography Tools")
+            //if (application_DropDown.Text == "Astro Photography Tools")
+            //{
+
+            HashSet<string> firstFileToHold = new HashSet<string>();
+
+            for (int i = 0; i < filesFullPath.Length; i++)
             {
+                string fileTypeTemp;
 
-                HashSet<string> firstFileToHold = new HashSet<string>();
+                // Get the header of each file
+                var headerInfo = ReadFIT(filesFullPath[i]).Header;
+                var imageType = headerInfo.FindCard("IMAGETYP").Value;
+                string filterType = "";
 
-                for (int i = 0; i < filesFullPath.Length; i++)
+                if (targetName == "NOTARGET")
                 {
-                    string fileTypeTemp;
-
-                    // Get the header of each file
-                    var headerInfo = ReadFIT(filesFullPath[i]).Header;
-                    var imageType = headerInfo.FindCard("IMAGETYP").Value;
-                    string filterType = "";
-                    if (imageType == "Light Frame" || imageType == "Flat Frame")
-                    {
-                        filterType = headerInfo.FindCard("FILTER").Value;
-                    }
-
-                    if (!fileTypesHashSet.Contains(imageType + "/" + filterType))
-                    {
-                        // If the file type is not already in the hash set then add it
-                        fileTypesHashSet.Add(imageType + "/" + filterType);
-                        if (filterType == "")
-                        {
-                            System.IO.Directory.CreateDirectory(dstPath + "\\" + targetName + "\\" + dateFolder + "\\" + imageType + "s");
-                        }
-                        else
-                        {
-                            System.IO.Directory.CreateDirectory(dstPath + "\\" + targetName + "\\" + dateFolder + "\\" + imageType + "s\\" + filterType);
-                        }
-                    }
-
                     switch (imageType)
                     {
                         case "Light Frame":
-                            fileTypeTemp = "\\Light Frames\\" + headerInfo.FindCard("FILTER").Value + "\\";
-                            break;
-                        case "Dark Frame":
-                            fileTypeTemp = "\\Dark Frames\\";
-                            break;
-                        case "Flat Frame":
-                            fileTypeTemp = "\\Flat Frames\\" + filterType + "\\";
+                            targetName = headerInfo.FindCard("OBJECT").Value;
+                            destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
                             break;
                         default:
-                            fileTypeTemp = "\\UNKNOWN\\";
+                            targetName = "NOTARGET";
+                            destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
                             break;
                     }
-
-                    System.IO.File.Copy(filesFullPath[i], txtbx_dstfolder.Text + "\\" + txtbx_targetName.Text + "\\" + dateFolder + "\\" + fileTypeTemp + files[i]);
-                    // Get the FITS image data information
-                    BasicHDU hdu = ReadFIT(filesFullPath[i]);
-
-                    if (imageType == "Light Frame" && !firstFileToHold.Contains(files[i]))
-                    {
-                        hduToGetInfoFrom = hdu;
-                        firstFileToHold.Add(files[i]);
-                    }
-                    lblStatus.Text = hdu.Instrument;
                 }
+
+                if (imageType == "Light Frame" || imageType == "Flat Frame")
+                {
+                    filterType = headerInfo.FindCard("FILTER").Value;
+                }
+
+                if (!fileTypesHashSet.Contains(imageType + "/" + filterType))
+                {
+                    // If the file type is not already in the hash set then add it
+                    fileTypesHashSet.Add(imageType + "/" + filterType);
+                    if (filterType == "")
+                    {
+                        System.IO.Directory.CreateDirectory(destToImages + imageType + "s");
+                    }
+                    else
+                    {
+                        System.IO.Directory.CreateDirectory(destToImages + imageType + "s\\" + filterType);
+                    }
+                }
+
+                switch (imageType)
+                {
+                    case "Light Frame":
+                        fileTypeTemp = "\\Light Frames\\" + headerInfo.FindCard("FILTER").Value + "\\";
+                        break;
+                    case "Dark Frame":
+                        fileTypeTemp = "\\Dark Frames\\";
+                        break;
+                    case "Flat Frame":
+                        fileTypeTemp = "\\Flat Frames\\" + filterType + "\\";
+                        break;
+                    default:
+                        fileTypeTemp = "\\UNKNOWN\\";
+                        break;
+                }
+
+                System.IO.File.Copy(filesFullPath[i], txtbx_dstfolder.Text + "\\" + targetName + "\\" + dateFolder + "\\" + fileTypeTemp + files[i]);
+                // Get the FITS image data information
+                BasicHDU hdu = ReadFIT(filesFullPath[i]);
+
+                if (imageType == "Light Frame" && !firstFileToHold.Contains(files[i]))
+                {
+                    hduToGetInfoFrom = hdu;
+                    firstFileToHold.Add(files[i]);
+                }
+                lblStatus.Text = hdu.Instrument;
             }
+            //}
         }
 
         private static BasicHDU ReadFIT(string fileName)
@@ -211,6 +227,11 @@ namespace AstroImagingCatalog
             long tempID = testDatabase.Count;
             Header hduHeader = hdu.Header;
 
+            if (objectName == "NOTARGET")
+            {
+                objectName = hduHeader.FindCard("OBJECT").Value;
+            }
+
             if (!string.IsNullOrWhiteSpace(txtbx_dbDstFolder.Text))
             {
                 // Open a database or create one if none exists
@@ -246,7 +267,14 @@ namespace AstroImagingCatalog
 
         private void btn_catalogImages_Click(object sender, RoutedEventArgs e)
         {
-            AddItemToDatabase(txtbx_targetName.Text, dateToStore, destToImages, hduToGetInfoFrom);
+            if (!string.IsNullOrWhiteSpace(txtbx_targetName.Text))
+            {
+                AddItemToDatabase(txtbx_targetName.Text, dateToStore, destToImages, hduToGetInfoFrom);
+            }
+            else
+            {
+                AddItemToDatabase("NOTARGET", dateToStore, destToImages, hduToGetInfoFrom);
+            }
         }
 
         private void btn_searchDB_Click(object sender, RoutedEventArgs e)

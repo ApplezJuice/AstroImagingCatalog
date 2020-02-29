@@ -43,12 +43,12 @@
                     <StackPanel>
                         <GroupBox x:Name="grpbx_selectFolders" Header="Select Image Folders" Width="auto" Height="auto" VerticalAlignment="Top" Grid.Row="0" Margin="5,0" Grid.ColumnSpan="2">
                             <StackPanel Orientation="Vertical">
-                                <WrapPanel>
+                                <!--<WrapPanel>
                                     <Label x:Name="lbl_FileStructureSelect" Content="Select File Structure Type" Margin="3" VerticalAlignment="Center" Width="150"/>
                                     <ComboBox x:Name="application_DropDown" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" Width="200" SelectionChanged="ComboBox_SelectionChanged">
                                         <ComboBoxItem x:Name="combo_APT" Content="Astro Photography Tools" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     </ComboBox>
-                                </WrapPanel>
+                                </WrapPanel>-->
                                 <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" Width="auto" Margin="0,0,0,0">
                                     <Label x:Name="lbl_foldersource" Content="Source" Margin="3" VerticalAlignment="Center" Width="80"/>
                                     <TextBox x:Name="txtbx_srcfolder" TabIndex="1" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="494"/>
@@ -75,6 +75,9 @@
                                 <WrapPanel>
                                     <Label x:Name="lbl_TargetName" Content="Object Name" Margin="3" VerticalAlignment="Center" Width="80"/>
                                     <TextBox x:Name="txtbx_targetName" TabIndex="2" Height="30" Margin="3" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="574"/>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <Label x:Name="lbl_noTargetName" Content="If no object name is provided. It will gather it from the object name from the imaging software" FontSize="10"/>
                                 </WrapPanel>
                                 <WrapPanel>
                                     <Label x:Name="lbl_DateTaken" Content="Date Taken" Margin="3" VerticalAlignment="Center" Width="80"/>
