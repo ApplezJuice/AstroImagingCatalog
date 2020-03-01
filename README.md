@@ -8,4 +8,3 @@ None
 
 ## Features to add
 
-Add exposure time to the database.
