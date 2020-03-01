@@ -16,7 +16,7 @@ namespace AstroImagingCatalog
     {
         public List<FITInformation> testDatabase = new List<FITInformation>();
         public string dateToStore;
-        public BasicHDU hduToGetInfoFrom;
+        public List<BasicHDU> hduToGetInfoFrom = new List<BasicHDU>();
         public string destToImages;
 
         public MainWindow()
@@ -83,7 +83,7 @@ namespace AstroImagingCatalog
 
                 DateTime dateTaken = new DateTime();
 
-                System.IO.Directory.CreateDirectory(dstPath + @"\" + targetName);
+                //System.IO.Directory.CreateDirectory(dstPath + @"\" + targetName);
 
                 // Create array of all file names in the image folder
                 string[] files;
@@ -116,7 +116,7 @@ namespace AstroImagingCatalog
             //if (application_DropDown.Text == "Astro Photography Tools")
             //{
 
-            HashSet<string> firstFileToHold = new HashSet<string>();
+            HashSet<string> objectNames = new HashSet<string>();
 
             for (int i = 0; i < filesFullPath.Length; i++)
             {
@@ -127,20 +127,27 @@ namespace AstroImagingCatalog
                 var imageType = headerInfo.FindCard("IMAGETYP").Value;
                 string filterType = "";
 
-                if (targetName == "NOTARGET")
+               
+                switch (imageType)
                 {
-                    switch (imageType)
-                    {
-                        case "Light Frame":
+                    case "Light Frame":
+                        if (string.IsNullOrWhiteSpace(txtbx_objectName.Text))
+                        {
                             targetName = headerInfo.FindCard("OBJECT").Value;
-                            destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
-                            break;
-                        default:
-                            targetName = "NOTARGET";
-                            destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
-                            break;
-                    }
+                            if (string.IsNullOrEmpty(targetName))
+                            {
+                                targetName = "NOTARGET";
+                            }
+                        }
+                        
+                        destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
+                        break;
+                    default:
+                        targetName = "NOTARGET";
+                        destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
+                        break;
                 }
+                
 
                 if (imageType == "Light Frame" || imageType == "Flat Frame")
                 {
@@ -181,11 +188,24 @@ namespace AstroImagingCatalog
                 // Get the FITS image data information
                 BasicHDU hdu = ReadFIT(filesFullPath[i]);
 
-                if (imageType == "Light Frame" && !firstFileToHold.Contains(files[i]))
+                if (string.IsNullOrWhiteSpace(txtbx_objectName.Text))
                 {
-                    hduToGetInfoFrom = hdu;
-                    firstFileToHold.Add(files[i]);
+                    // No object name
+                    if (imageType == "Light Frame" && !objectNames.Contains(hdu.Header.FindCard("OBJECT").Value))
+                    {
+                        hduToGetInfoFrom.Add(hdu);
+                        objectNames.Add(hdu.Header.FindCard("OBJECT").Value);
+                    }
                 }
+                else
+                {
+                    if (imageType == "Light Frame" && !objectNames.Contains(txtbx_objectName.Text))
+                    {
+                        hduToGetInfoFrom.Add(hdu);
+                        objectNames.Add(txtbx_objectName.Text);
+                    }
+                }
+                
                 lblStatus.Text = hdu.Instrument;
             }
             //}
@@ -222,42 +242,57 @@ namespace AstroImagingCatalog
             }
         }
 
-        private void AddItemToDatabase(string objectName, string date, string fileDirectory, BasicHDU hdu)
+        private void AddItemToDatabase(string date, string fileDirectory, List<BasicHDU> hdu)
         {
             long tempID = testDatabase.Count;
-            Header hduHeader = hdu.Header;
-
-            if (objectName == "NOTARGET")
-            {
-                objectName = hduHeader.FindCard("OBJECT").Value;
-            }
 
             if (!string.IsNullOrWhiteSpace(txtbx_dbDstFolder.Text))
             {
-                // Open a database or create one if none exists
-                using (var db = new LiteDatabase(txtbx_dbDstFolder.Text + "\\ImageCatalog.db"))
+                foreach (var curHdu in hdu)
                 {
-                    // get a collection or create one if none exists
-                    var col = db.GetCollection<FITInformation>("Images");
+                    Header hduHeader = curHdu.Header;
+                    string objectName;
 
-                    // create your new image entry
-                    var image = new FITInformation
+                    if (!string.IsNullOrWhiteSpace(txtbx_objectName.Text))
                     {
-                        ObjectName = objectName,
-                        DateTaken = date,
-                        ImagingCamera = hdu.Instrument,
-                        FilesDirectory = fileDirectory,
-                        FocalLength = Convert.ToInt32(hduHeader.FindCard("FOCALLEN").Value),
-                        CameraTemp = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value),
-                        Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,
-                        CameraGain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value),
-                        SiteLat = hduHeader.FindCard("SITELAT").Value.ToString(),
-                        SiteLong = hduHeader.FindCard("SITELONG").Value.ToString()
-                    };
+                        // if there is a target name
+                        objectName = txtbx_objectName.Text;
+                    }
+                    else
+                    {
+                        objectName = hduHeader.FindCard("OBJECT").Value;
+                        if (string.IsNullOrEmpty(objectName))
+                        {
+                            objectName = "NOTARGET";
+                        }
+                    }
 
-                    // insert new image (it will be auto-incremented)
-                    col.Insert(image);
+                    // Open a database or create one if none exists
+                    using (var db = new LiteDatabase(txtbx_dbDstFolder.Text + "\\ImageCatalog.db"))
+                    {
+                        // get a collection or create one if none exists
+                        var col = db.GetCollection<FITInformation>("Images");
+
+                        // create your new image entry
+                        var image = new FITInformation
+                        {
+                            ObjectName = objectName,
+                            DateTaken = date,
+                            ImagingCamera = curHdu.Instrument,
+                            FilesDirectory = fileDirectory,
+                            FocalLength = Convert.ToInt32(hduHeader.FindCard("FOCALLEN").Value),
+                            CameraTemp = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value),
+                            Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,
+                            CameraGain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value),
+                            SiteLat = hduHeader.FindCard("SITELAT").Value.ToString(),
+                            SiteLong = hduHeader.FindCard("SITELONG").Value.ToString()
+                        };
+
+                        // insert new image (it will be auto-incremented)
+                        col.Insert(image);
+                    }
                 }
+                
             }
             else
             {
@@ -267,14 +302,7 @@ namespace AstroImagingCatalog
 
         private void btn_catalogImages_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtbx_targetName.Text))
-            {
-                AddItemToDatabase(txtbx_targetName.Text, dateToStore, destToImages, hduToGetInfoFrom);
-            }
-            else
-            {
-                AddItemToDatabase("NOTARGET", dateToStore, destToImages, hduToGetInfoFrom);
-            }
+            AddItemToDatabase(dateToStore, destToImages, hduToGetInfoFrom);
         }
 
         private void btn_searchDB_Click(object sender, RoutedEventArgs e)
