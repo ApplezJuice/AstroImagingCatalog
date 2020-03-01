@@ -273,19 +273,43 @@ namespace AstroImagingCatalog
                         // get a collection or create one if none exists
                         var col = db.GetCollection<FITInformation>("Images");
 
+                        int gain = 0;
+
+                        try
+                        {
+                            var temp = hduHeader.FindCard("GAIN").Value;
+                            gain = Convert.ToInt32(temp);
+                        }
+                        catch (Exception)
+                        {
+
+                            gain = 0;
+                        }
+
+                        //if (hduHeader.FindCard("GAIN").IsStringValue)
+                        //{
+                        //    gain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value);
+                        //}
+
                         // create your new image entry
+                        var focalLength = hduHeader.FindCard("FOCALLEN").Value;
+                        var splitLength = focalLength.Split('.');
+
+                        var ccd = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value);
+                        var roundedCCD = decimal.Round(ccd, 2, MidpointRounding.AwayFromZero);
+
                         var image = new FITInformation
                         {
                             ObjectName = objectName,
                             DateTaken = date,
                             ImagingCamera = curHdu.Instrument,
                             FilesDirectory = fileDirectory,
-                            FocalLength = Convert.ToInt32(hduHeader.FindCard("FOCALLEN").Value),
-                            CameraTemp = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value),
+                            FocalLength = Convert.ToInt32(splitLength[0]),
+                            CameraTemp = roundedCCD,
                             Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,
-                            CameraGain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value),
-                            SiteLat = hduHeader.FindCard("SITELAT").Value.ToString(),
-                            SiteLong = hduHeader.FindCard("SITELONG").Value.ToString()
+                            CameraGain = gain,
+                            SiteLat = hduHeader.FindCard("SITELAT").Value,
+                            SiteLong = hduHeader.FindCard("SITELONG").Value
                         };
 
                         // insert new image (it will be auto-incremented)
