@@ -34,3 +34,7 @@ C:\Users\Mike\Documents\repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\
 C:\Users\Mike\Documents\repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.csproj.CopyComplete
 C:\Users\Mike\Documents\repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.exe
 C:\Users\Mike\Documents\repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.pdb
+C:\Users\Mike\Documents\repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\AstroImagingCatalog.exe.manifest
+C:\Users\Mike\Documents\repos\AstroImagingCatalog\AstroImagingCatalog\bin\Debug\AstroImagingCatalog.application
+C:\Users\Mike\Documents\repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.exe.manifest
+C:\Users\Mike\Documents\repos\AstroImagingCatalog\AstroImagingCatalog\obj\Debug\AstroImagingCatalog.application

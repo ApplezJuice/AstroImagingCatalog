@@ -431,5 +431,15 @@ namespace AstroImagingCatalog
 
             throw new Exception("DB could not query");
          }
+
+        private void MenuItem_SaveSettings(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtbx_dbDstFolder.Text))
+            {
+                Properties.Settings.Default.Properties["DatabaseLocation"].DefaultValue = txtbx_dbDstFolder.Text;
+            }
+
+            Properties.Settings.Default.Save();
+        }
     }
 }

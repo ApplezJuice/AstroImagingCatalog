@@ -14,8 +14,7 @@
         </StatusBar>
         <Menu DockPanel.Dock="Top" Margin="0,3">
             <MenuItem Header="_File">
-                <MenuItem Header="_Save Template"/>
-                <MenuItem Header="_Load Template"/>
+                <MenuItem Header="_Save Settings" Click="MenuItem_SaveSettings" />
                 <Separator />
                 <MenuItem Header="_Exit" Click="MenuItem_ExitClick" />
             </MenuItem>
