@@ -151,8 +151,6 @@ namespace AstroImagingCatalog
                             targetName = "NOTARGET";
                         }
                     }
-                        
-                    
                     break;
                 default:
                     targetName = "NOTARGET";
@@ -312,6 +310,9 @@ namespace AstroImagingCatalog
                         var ccd = Convert.ToDecimal(hduHeader.FindCard("CCD-TEMP").Value);
                         var roundedCCD = decimal.Round(ccd, 2, MidpointRounding.AwayFromZero);
 
+                        var tempExp = hduHeader.FindCard("EXPTIME").Value;
+                        var expToStore = tempExp.Split('.');
+
                         var image = new FITInformation
                         {
                             ObjectName = objectName,
@@ -323,7 +324,8 @@ namespace AstroImagingCatalog
                             Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,
                             CameraGain = gain,
                             SiteLat = hduHeader.FindCard("SITELAT").Value,
-                            SiteLong = hduHeader.FindCard("SITELONG").Value
+                            SiteLong = hduHeader.FindCard("SITELONG").Value,
+                            ExposureTime = expToStore[0]
                         };
 
                         // insert new image (it will be auto-incremented)
@@ -359,7 +361,9 @@ namespace AstroImagingCatalog
                     p.Inlines.Add(new LineBreak());
                     //rtbx_searchResults.Document.Blocks.Add(paragraph1);
 
-                    p.Inlines.Add("Object Name: " + item.ObjectName + " | ");
+                    p.Inlines.Add("Object Name: ");
+                    p.Inlines.Add(new Bold(new Run(item.ObjectName)));
+                    p.Inlines.Add(" | ");
                     p.Inlines.Add("Date Taken: " + item.DateTaken);
                     p.Inlines.Add(new LineBreak());
                     p.Inlines.Add("File Location: " + item.FilesDirectory);
@@ -368,6 +372,7 @@ namespace AstroImagingCatalog
                     p.Inlines.Add("Binning: " + item.Binning + " | ");
                     p.Inlines.Add("CCD Temp: " + item.CameraTemp + " | ");
                     p.Inlines.Add("Gain: " + item.CameraGain + " | ");
+                    p.Inlines.Add("Exposure Seconds: " + item.ExposureTime + " | ");
                     p.Inlines.Add("Focal Length: " + item.FocalLength + " | ");
                     p.Inlines.Add("Latitude: " + item.SiteLat + " | ");
                     p.Inlines.Add("Longitude: " + item.SiteLong);

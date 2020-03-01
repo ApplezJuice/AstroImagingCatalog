@@ -20,5 +20,6 @@ namespace AstroImagingCatalog
         public int CameraGain { get; set; }
         public int CameraOffset { get; set; }
         public decimal CameraTemp { get; set; }
+        public string ExposureTime { get; set; }
     }
 }
