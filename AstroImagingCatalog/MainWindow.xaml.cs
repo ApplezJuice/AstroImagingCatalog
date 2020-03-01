@@ -15,9 +15,9 @@ namespace AstroImagingCatalog
     public partial class MainWindow : Window
     {
         public List<FITInformation> testDatabase = new List<FITInformation>();
-        public string dateToStore;
+        public Dictionary<string, string> dateToStore = new Dictionary<string, string>();
         public List<BasicHDU> hduToGetInfoFrom = new List<BasicHDU>();
-        public string destToImages;
+        public Dictionary<string, string> destToImages = new Dictionary<string, string>();
 
         public MainWindow()
         {
@@ -88,6 +88,8 @@ namespace AstroImagingCatalog
                 // Create array of all file names in the image folder
                 string[] files;
                 string[] filesFullPath;
+
+                // This date may not be needed
                 GenerateArrayOfFileNames(out dateTaken, out files, out filesFullPath);
 
                 // Set date for object
@@ -96,7 +98,6 @@ namespace AstroImagingCatalog
                     dateTaken = (DateTime)date_DateTaken.SelectedDate;
                 }
                 var dateFolder = dateTaken.ToString("yyyyMMdd");
-                dateToStore = dateFolder;
 
                 CreateDirectoryAndSortImages(dstPath, targetName, files, filesFullPath, dateFolder);
             }
@@ -110,7 +111,7 @@ namespace AstroImagingCatalog
         {
 
             HashSet<string> fileTypesHashSet = new HashSet<string>();
-            destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
+            //destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
 
             // Create Light Frames directories
             //if (application_DropDown.Text == "Astro Photography Tools")
@@ -127,27 +128,40 @@ namespace AstroImagingCatalog
                 var imageType = headerInfo.FindCard("IMAGETYP").Value;
                 string filterType = "";
 
-               
+                if (!date_DateTaken.SelectedDate.HasValue)
+                {
+                    var tempDate = System.IO.File.GetLastWriteTime(filesFullPath[i]);
+                    //var tempDate = DateTime.Parse(headerInfo.FindCard("DATE-OBS").Value);
+                    dateFolder = tempDate.ToString("yyyMMdd");
+                    if (!dateToStore.ContainsValue(dateFolder))
+                    {
+                        dateToStore.Add(headerInfo.FindCard("OBJECT").Value, dateFolder);
+                    }
+                }
+
+
                 switch (imageType)
                 {
-                    case "Light Frame":
-                        if (string.IsNullOrWhiteSpace(txtbx_objectName.Text))
+                case "Light Frame":
+                    if (string.IsNullOrWhiteSpace(txtbx_objectName.Text))
+                    {
+                        targetName = headerInfo.FindCard("OBJECT").Value;
+                        if (string.IsNullOrEmpty(targetName))
                         {
-                            targetName = headerInfo.FindCard("OBJECT").Value;
-                            if (string.IsNullOrEmpty(targetName))
-                            {
-                                targetName = "NOTARGET";
-                            }
+                            targetName = "NOTARGET";
                         }
+                    }
                         
-                        destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
-                        break;
-                    default:
-                        targetName = "NOTARGET";
-                        destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
-                        break;
+                    
+                    break;
+                default:
+                    targetName = "NOTARGET";
+                    //destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
+                    break;
                 }
-                
+
+                destToImages.Add(headerInfo.FindCard("OBJECT").Value, dstPath + "\\" + targetName + "\\" + dateFolder + "\\");
+                var cureDirToCreate = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
 
                 if (imageType == "Light Frame" || imageType == "Flat Frame")
                 {
@@ -160,11 +174,11 @@ namespace AstroImagingCatalog
                     fileTypesHashSet.Add(imageType + "/" + filterType);
                     if (filterType == "")
                     {
-                        System.IO.Directory.CreateDirectory(destToImages + imageType + "s");
+                        System.IO.Directory.CreateDirectory(cureDirToCreate + imageType + "s");
                     }
                     else
                     {
-                        System.IO.Directory.CreateDirectory(destToImages + imageType + "s\\" + filterType);
+                        System.IO.Directory.CreateDirectory(cureDirToCreate + imageType + "s\\" + filterType);
                     }
                 }
 
@@ -242,7 +256,7 @@ namespace AstroImagingCatalog
             }
         }
 
-        private void AddItemToDatabase(string date, string fileDirectory, List<BasicHDU> hdu)
+        private void AddItemToDatabase(Dictionary<string,string> date, Dictionary<string, string> fileDirectory, List<BasicHDU> hdu)
         {
             long tempID = testDatabase.Count;
 
@@ -274,6 +288,8 @@ namespace AstroImagingCatalog
                         var col = db.GetCollection<FITInformation>("Images");
 
                         int gain = 0;
+                        string dateToPass;
+                        string fileToStore;
 
                         try
                         {
@@ -286,10 +302,8 @@ namespace AstroImagingCatalog
                             gain = 0;
                         }
 
-                        //if (hduHeader.FindCard("GAIN").IsStringValue)
-                        //{
-                        //    gain = Convert.ToInt32(hduHeader.FindCard("GAIN").Value);
-                        //}
+                        dateToStore.TryGetValue(hduHeader.FindCard("OBJECT").Value, out dateToPass);
+                        destToImages.TryGetValue(hduHeader.FindCard("OBJECT").Value, out fileToStore);
 
                         // create your new image entry
                         var focalLength = hduHeader.FindCard("FOCALLEN").Value;
@@ -301,9 +315,9 @@ namespace AstroImagingCatalog
                         var image = new FITInformation
                         {
                             ObjectName = objectName,
-                            DateTaken = date,
+                            DateTaken = dateToPass,
                             ImagingCamera = curHdu.Instrument,
-                            FilesDirectory = fileDirectory,
+                            FilesDirectory = fileToStore,
                             FocalLength = Convert.ToInt32(splitLength[0]),
                             CameraTemp = roundedCCD,
                             Binning = hduHeader.FindCard("XBINNING").Value + "x" + hduHeader.FindCard("YBINNING").Value,

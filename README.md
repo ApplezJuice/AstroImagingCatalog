@@ -4,7 +4,7 @@ This will be an application that is able to sort your data from a night of imagi
 
 ## Known Bugs
 
-Date not updating between objects.
+None
 
 ## Features to add
 
