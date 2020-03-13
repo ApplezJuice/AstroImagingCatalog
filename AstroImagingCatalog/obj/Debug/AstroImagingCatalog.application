@@ -7,14 +7,14 @@
     <framework targetVersion="4.7.2" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="AstroImagingCatalog.exe.manifest" size="5520">
+    <dependentAssembly dependencyType="install" codebase="AstroImagingCatalog.exe.manifest" size="8988">
       <assemblyIdentity name="AstroImagingCatalog.exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>L3SNRGBEfrNdgZa2QxssRLY313Bchnhtq3TdNQwdRI4=</dsig:DigestValue>
+        <dsig:DigestValue>KkAzFwMXWe3+imwt5SshIcNR/LC2YX0aigpeS7UNJ3E=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

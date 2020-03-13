@@ -18,6 +18,7 @@ namespace AstroImagingCatalog
         public Dictionary<string, string> dateToStore = new Dictionary<string, string>();
         public List<BasicHDU> hduToGetInfoFrom = new List<BasicHDU>();
         public Dictionary<string, string> destToImages = new Dictionary<string, string>();
+        public NumSharpTest numSharp = new NumSharpTest();
 
         public MainWindow()
         {
@@ -56,10 +57,10 @@ namespace AstroImagingCatalog
             }
         }
 
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
 
-        }
+        //}
 
         private void MenuItem_ExitClick(object sender, RoutedEventArgs e)
         {
@@ -133,8 +134,10 @@ namespace AstroImagingCatalog
                     var tempDate = System.IO.File.GetLastWriteTime(filesFullPath[i]);
                     //var tempDate = DateTime.Parse(headerInfo.FindCard("DATE-OBS").Value);
                     dateFolder = tempDate.ToString("yyyMMdd");
-                    if (!dateToStore.ContainsValue(dateFolder))
+                    // TODO: temp dont store second date
+                    if (!dateToStore.ContainsValue(dateFolder) && !dateToStore.ContainsKey(headerInfo.FindCard("OBJECT").Value))
                     {
+                        // Same value with different date in the same folder causes this to be an error
                         dateToStore.Add(headerInfo.FindCard("OBJECT").Value, dateFolder);
                     }
                 }
@@ -157,8 +160,8 @@ namespace AstroImagingCatalog
                     //destToImages = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
                     break;
                 }
-
-                destToImages.Add(headerInfo.FindCard("OBJECT").Value, dstPath + "\\" + targetName + "\\" + dateFolder + "\\");
+                if (!destToImages.ContainsKey(headerInfo.FindCard("OBJECT").Value))
+                    destToImages.Add(headerInfo.FindCard("OBJECT").Value, dstPath + "\\" + targetName + "\\" + dateFolder + "\\");
                 var cureDirToCreate = dstPath + "\\" + targetName + "\\" + dateFolder + "\\";
 
                 if (imageType == "Light Frame" || imageType == "Flat Frame")
@@ -223,7 +226,7 @@ namespace AstroImagingCatalog
             //}
         }
 
-        private static BasicHDU ReadFIT(string fileName)
+        private BasicHDU ReadFIT(string fileName)
         {
             Fits f = new Fits(fileName);
             try
@@ -232,6 +235,9 @@ namespace AstroImagingCatalog
                 if (hdus != null)
                 {
                     hdus.Info();
+                    // TEST: NUM SHARP TEST
+                    ImageHDU imgHdu = (ImageHDU)f.GetHDU(0);
+                    numSharp.InitImage(imgHdu, fileName);
                 }
                 return hdus;
             }

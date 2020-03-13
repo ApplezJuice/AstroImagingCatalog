@@ -1,24 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Mike\\Documents\\repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj": {}
+    "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Mike\\Documents\\repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj": {
+    "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mike\\Documents\\repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj",
+        "projectUniqueName": "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj",
         "projectName": "AstroImagingCatalog",
-        "projectPath": "C:\\Users\\Mike\\Documents\\repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj",
-        "packagesPath": "C:\\Users\\Mike\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mike\\Documents\\repos\\AstroImagingCatalog\\AstroImagingCatalog\\obj\\",
+        "projectPath": "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\AstroImagingCatalog.csproj",
+        "packagesPath": "C:\\Users\\mhayes\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\mhayes\\Documents\\Repos\\AstroImagingCatalog\\AstroImagingCatalog\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\Mike\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\mhayes\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -49,6 +49,10 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[12.0.3, )"
+            },
+            "NumSharp": {
+              "target": "Package",
+              "version": "[0.20.5, )"
             }
           }
         }
